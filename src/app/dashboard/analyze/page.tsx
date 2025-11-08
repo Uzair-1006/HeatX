@@ -23,7 +23,6 @@ export default function AnalyzePage() {
   const renderValue = (key: string, val: any) => {
     if (val === null || val === undefined) return "-";
 
-    // FEATURE_IMPORTANCES table
     if (key === "FEATURE_IMPORTANCES" && Array.isArray(val)) {
       const maxIndex = val.indexOf(Math.max(...val));
       return (
@@ -75,15 +74,19 @@ export default function AnalyzePage() {
   return (
     <div className="space-y-6 p-4 pb-8 overflow-auto max-h-screen">
       {/* Dataset Preview */}
-      <Card className="glass-panel border-white/10 overflow-auto max-h-72 shadow-lg">
+      <Card className="glass-panel border-white/10 overflow-auto max-h-100 shadow-lg">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold">Dataset Preview: {name}</CardTitle>
+          <CardTitle className="text-lg font-semibold">
+            Dataset Preview: {name}
+          </CardTitle>
         </CardHeader>
         <CardContent className="overflow-auto">
           <div className="overflow-x-auto">
             <table className="table-auto w-full border border-gray-400">
               <thead>
                 <tr className="bg-gray-200">
+                  {/* 👇 Added S.No column */}
+                  <th className="px-2 py-1 border border-gray-400">S.No</th>
                   {["AT", "V", "AP", "RH", "PE"].map((header) => (
                     <th key={header} className="px-2 py-1 border border-gray-400">
                       {header}
@@ -92,10 +95,21 @@ export default function AnalyzePage() {
                 </tr>
               </thead>
               <tbody>
-                {dataset.slice(1, 6).map((row, i) => (
-                  <tr key={i} className="hover:bg-white/5 transition-colors">
+                {/* 👇 Increased slice to 7 (showing 6 rows instead of 5) */}
+                {dataset.slice(1, 7).map((row, i) => (
+                  <tr
+                    key={i}
+                    className="hover:bg-white/5 transition-colors text-sm"
+                  >
+                    {/* 👇 Serial number column */}
+                    <td className="px-2 py-1 border border-gray-400 text-center font-medium">
+                      {i + 1}
+                    </td>
                     {row.map((cell, j) => (
-                      <td key={j} className="px-2 py-1 border border-gray-400">
+                      <td
+                        key={j}
+                        className="px-2 py-1 border border-gray-400 text-center"
+                      >
                         {cell ?? "-"}
                       </td>
                     ))}
@@ -114,7 +128,9 @@ export default function AnalyzePage() {
           onClick={() => analyzeDataset("regression")}
           disabled={loading}
         >
-          {loading ? "Running Gradient Boosting..." : "Run Gradient Boosting Regression"}
+          {loading
+            ? "Running Gradient Boosting..."
+            : "Run Gradient Boosting Regression"}
         </Button>
         <Button variant="ghost" onClick={clearResult}>
           Clear Result
@@ -171,7 +187,9 @@ export default function AnalyzePage() {
               </CardHeader>
               <CardContent>
                 <p className="text-red-400 whitespace-pre-wrap font-mono">
-                  {typeof error === "string" ? error : JSON.stringify(error, null, 2)}
+                  {typeof error === "string"
+                    ? error
+                    : JSON.stringify(error, null, 2)}
                 </p>
               </CardContent>
             </Card>

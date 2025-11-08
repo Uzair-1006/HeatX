@@ -177,3 +177,25 @@
   background: rgba(255, 255, 255, 0.05);
   transition: all 0.3s ease;
 }
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0px rgba(56, 189, 248, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.45);
+  }
+}
+
+.chat-pulse {
+  animation: pulse-glow 2s infinite ease-in-out;
+}

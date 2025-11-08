@@ -1,251 +1,255 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Upload, Brain, Zap, Lightbulb, Share2 } from "lucide-react";
+import { Line, Bar, Pie } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  ArcElement,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import {
+  Flame,
+  Zap,
+  Gauge,
+  Leaf,
+  Cpu,
+  Factory,
+  AlertCircle,
+  Bot,
+} from "lucide-react";
 
-export default function DashboardHome() {
-  const [visibleSteps, setVisibleSteps] = useState([]);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  ArcElement,
+  Tooltip,
+  Legend
+);
 
-  const steps = [
-    {
-      title: "Upload Dataset",
-      desc: "Start by uploading your thermal power plant data (CSV or Excel). The dataset should include historical energy output, fuel usage, and operational metrics.",
-      info: "Tip: Ensure the dataset is clean and complete to get the most accurate analysis.",
-      color: "from-blue-500 to-cyan-500",
-      icon: Upload,
-      delay: 0.1,
-    },
-    {
-      title: "Run AI Analysis",
-      desc: "Our model analyzes patterns using regression and classification techniques to understand power generation trends and efficiency.",
-      info: "Insight: This step helps identify bottlenecks and potential optimizations in energy production.",
-      color: "from-purple-500 to-pink-500",
-      icon: Brain,
-      delay: 0.2,
-    },
-    {
-      title: "Predict Output",
-      desc: "Get predicted net power output in MW, TWh, and efficiency metrics for the upcoming cycles based on your data.",
-      info: "Note: Predictions help in planning energy distribution, avoiding overloads, and maximizing efficiency.",
-      color: "from-orange-500 to-red-500",
-      icon: Zap,
-      delay: 0.3,
-    },
-    {
-      title: "Choose Best Method",
-      desc: "AI recommends the optimal energy generation cycle based on predicted results and operational constraints.",
-      info: "Suggestion: Follow the AI's recommendations to balance cost, efficiency, and sustainability.",
-      color: "from-yellow-500 to-orange-500",
-      icon: Lightbulb,
-      delay: 0.4,
-    },
-    {
-      title: "Allocate Energy",
-      desc: "Distribute generated power across grids, storage, or regions according to priorities and projected demand.",
-      info: "Pro Tip: Allocation ensures energy reaches sectors that need it most while maintaining grid stability.",
-      color: "from-green-500 to-emerald-500",
-      icon: Share2,
-      delay: 0.5,
-    },
-  ];
+export default function HeatXDashboard() {
+  const [heatData, setHeatData] = useState<number[]>([85, 90, 92, 88, 94, 97]);
+  const [efficiencyData, setEfficiencyData] = useState<number[]>([70, 73, 75, 78, 80]);
+  const [powerOutput, setPowerOutput] = useState<number[]>([12, 14, 15, 13, 16, 17]);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const stepIndex = parseInt(entry.target.dataset.stepIndex);
-            setVisibleSteps(prev => [...prev, stepIndex]);
-          }
-        });
-      },
-      { threshold: 0.3 }
-    );
-
-    const elements = document.querySelectorAll('[data-step-index]');
-    elements.forEach(el => observer.observe(el));
-
-    return () => observer.disconnect();
+    const interval = setInterval(() => {
+      setHeatData((prev) => [...prev.slice(1), Math.random() * 20 + 80]);
+      setEfficiencyData((prev) => [...prev.slice(1), Math.random() * 10 + 70]);
+      setPowerOutput((prev) => [...prev.slice(1), Math.random() * 8 + 12]);
+    }, 5000);
+    return () => clearInterval(interval);
   }, []);
 
+  const heatChart = {
+    labels: ["-25s", "-20s", "-15s", "-10s", "-5s", "Now"],
+    datasets: [
+      {
+        label: "Heat Captured (°C)",
+        data: heatData,
+        borderColor: "#10B981",
+        backgroundColor: "rgba(16, 185, 129, 0.3)",
+        fill: true,
+        tension: 0.4,
+        pointRadius: 2,
+      },
+    ],
+  };
+
+  const efficiencyChart = {
+    labels: ["Cycle 1", "Cycle 2", "Cycle 3", "Cycle 4", "Cycle 5"],
+    datasets: [
+      {
+        label: "Conversion Efficiency (%)",
+        data: efficiencyData,
+        backgroundColor: "#3B82F6",
+      },
+    ],
+  };
+
+  const powerPrediction = {
+    labels: ["T-5", "T-4", "T-3", "T-2", "T-1", "Now"],
+    datasets: [
+      {
+        label: "Power Output (kWh)",
+        data: powerOutput,
+        borderColor: "#F59E0B",
+        backgroundColor: "rgba(245, 158, 11, 0.3)",
+        fill: true,
+        tension: 0.4,
+        pointRadius: 2,
+      },
+    ],
+  };
+
+  const resourceChart = {
+    labels: ["Heat Recovery", "Storage", "Distribution", "Loss"],
+    datasets: [
+      {
+        label: "Energy Allocation",
+        data: [45, 30, 20, 5],
+        backgroundColor: [
+          "rgba(16,185,129,0.7)",
+          "rgba(59,130,246,0.7)",
+          "rgba(245,158,11,0.7)",
+          "rgba(239,68,68,0.7)",
+        ],
+        borderWidth: 0,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { labels: { color: "#CBD5E1" } },
+    },
+    scales: {
+      x: { ticks: { color: "#94A3B8" }, grid: { color: "#1E293B" } },
+      y: { ticks: { color: "#94A3B8" }, grid: { color: "#1E293B" } },
+    },
+  };
+
   return (
-    <div className="min-h-screen bg-white overflow-y-auto">
-      {/* Header */}
-      <div className="text-center max-w-3xl mx-auto py-12 px-4 animate-in fade-in duration-600">
-        <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight">
-          Your Energy Story Unfolds
-        </h1>
-        <p className="mt-4 text-gray-700 text-lg leading-relaxed">
-          Step by step, understand how your data transforms into actionable insights for sustainable energy.
-        </p>
-      </div>
+    <div className="flex-1 overflow-y-auto h-screen bg-slate-950">
+      <div className="max-w-7xl mx-auto px-6 py-10">
+        {/* Header */}
+        <div className="mb-10 sticky top-0 bg-slate-950/80 backdrop-blur-md pb-3 z-20">
+          <h1 className="text-3xl font-bold text-white mb-1">HeatX AI Dashboard</h1>
+          <p className="text-gray-400 text-sm">Real-time heat energy capture and conversion analytics</p>
+        </div>
 
-      {/* Steps Container */}
-      <div className="w-full px-4 sm:px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col space-y-8 sm:space-y-12 pb-12">
-            {steps.map((step, index) => (
-              <section
-                key={index}
-                data-step-index={index}
-                className={`relative flex flex-col md:flex-row items-center gap-6 sm:gap-8 p-6 sm:p-8 border border-gray-200 rounded-2xl shadow-md bg-gray-50 transition-all duration-600 ${
-                  visibleSteps.includes(index) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                }`}
-                style={{
-                  transitionDelay: `${step.delay}s`
-                }}
-              >
-                {/* Icon */}
-                <div
-                  className={`w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-r ${step.color} flex items-center justify-center text-white shadow-lg flex-shrink-0`}
-                >
-                  <step.icon className="h-8 w-8 sm:h-10 sm:w-10" />
-                </div>
+        {/* KPI Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+          {[
+            {
+              label: "Heat Captured",
+              value: "94.2°C",
+              icon: <Flame className="h-6 w-6 text-orange-400" />,
+              gradient: "from-orange-500/40 to-yellow-500/20",
+            },
+            {
+              label: "Power Output",
+              value: "16.4 kWh",
+              icon: <Zap className="h-6 w-6 text-emerald-400" />,
+              gradient: "from-emerald-500/40 to-cyan-500/20",
+            },
+            {
+              label: "Efficiency",
+              value: "82.7%",
+              icon: <Gauge className="h-6 w-6 text-blue-400" />,
+              gradient: "from-blue-500/40 to-purple-500/20",
+            },
+            {
+              label: "CO₂ Reduced",
+              value: "12.3 kg",
+              icon: <Leaf className="h-6 w-6 text-green-400" />,
+              gradient: "from-green-500/40 to-emerald-500/20",
+            },
+          ].map((card, i) => (
+            <div
+              key={i}
+              className={`p-6 rounded-xl bg-gradient-to-br ${card.gradient} border border-white/10 backdrop-blur-lg shadow-md`}
+            >
+              <div className="flex items-center justify-between mb-2">
+                {card.icon}
+                <p className="text-sm text-gray-400">{card.label}</p>
+              </div>
+              <p className="text-2xl font-bold text-white">{card.value}</p>
+            </div>
+          ))}
+        </div>
 
-                {/* Text */}
-                <div className="flex-1 text-center md:text-left space-y-2 max-w-2xl">
-                  <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">{step.title}</h3>
-                  <p className="text-gray-700 text-sm sm:text-base md:text-lg leading-relaxed">{step.desc}</p>
-                  <p className="text-gray-500 text-xs sm:text-sm md:text-base italic">{step.info}</p>
-                </div>
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+          <div className="p-6 bg-slate-900/60 border border-white/10 rounded-xl backdrop-blur-xl">
+            <h3 className="text-lg font-semibold text-white mb-4">Heat Capture Trend</h3>
+            <div className="h-60">
+              <Line data={heatChart} options={chartOptions} />
+            </div>
+          </div>
 
-                {/* Step Number */}
-                <div className="absolute top-3 sm:top-4 right-3 sm:right-4 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-900 font-bold text-sm sm:text-lg shadow-md">
-                  {index + 1}
-                </div>
-              </section>
-            ))}
+          <div className="p-6 bg-slate-900/60 border border-white/10 rounded-xl backdrop-blur-xl">
+            <h3 className="text-lg font-semibold text-white mb-4">
+              Conversion Efficiency by Cycle
+            </h3>
+            <div className="h-60">
+              <Bar data={efficiencyChart} options={chartOptions} />
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Additional Content Sections for Better Scrolling */}
-      <div className="w-full px-4 sm:px-6">
-        <div className="max-w-6xl mx-auto">
-          {/* Why Choose Our Platform Section */}
-          <section className="py-12 sm:py-16">
-            <div className="text-center mb-8 sm:mb-12">
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">Why Choose Our Platform?</h2>
-              <p className="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto">
-                Advanced AI technology meets practical energy solutions
-              </p>
+        {/* Additional Analytics */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-10">
+          <div className="p-6 bg-slate-900/60 border border-white/10 rounded-xl backdrop-blur-xl">
+            <h3 className="text-lg font-semibold text-white mb-4">Predicted Power Output</h3>
+            <div className="h-60">
+              <Line data={powerPrediction} options={chartOptions} />
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-              <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-6 sm:p-8 rounded-2xl border border-blue-200">
-                <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mb-4">
-                  <Brain className="h-6 w-6 text-white" />
-                </div>
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">AI-Powered</h3>
-                <p className="text-gray-600 text-sm sm:text-base">
-                  State-of-the-art machine learning algorithms analyze your energy data with 95%+ accuracy.
-                </p>
-              </div>
+          </div>
 
-              <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 sm:p-8 rounded-2xl border border-green-200">
-                <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mb-4">
-                  <Zap className="h-6 w-6 text-white" />
-                </div>
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">Real-time</h3>
-                <p className="text-gray-600 text-sm sm:text-base">
-                  Get instant predictions and recommendations for immediate operational decisions.
-                </p>
-              </div>
-
-              <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-6 sm:p-8 rounded-2xl border border-purple-200">
-                <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mb-4">
-                  <Lightbulb className="h-6 w-6 text-white" />
-                </div>
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">Smart Insights</h3>
-                <p className="text-gray-600 text-sm sm:text-base">
-                  Discover optimization opportunities and efficiency improvements automatically.
-                </p>
-              </div>
+          <div className="p-6 bg-slate-900/60 border border-white/10 rounded-xl backdrop-blur-xl">
+            <h3 className="text-lg font-semibold text-white mb-4">Resource Allocation</h3>
+            <div className="h-60 flex items-center justify-center">
+              <Pie
+                data={resourceChart}
+                options={{
+                  plugins: { legend: { labels: { color: "#CBD5E1" } } },
+                }}
+              />
             </div>
-          </section>
+          </div>
 
-          {/* Key Benefits Section */}
-          <section className="py-12 sm:py-16 bg-gray-50 rounded-3xl">
-            <div className="px-6 sm:px-8">
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center mb-8 sm:mb-12">
-                Transform Your Energy Operations
-              </h2>
-              
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12">
-                <div className="space-y-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <span className="text-white font-bold text-sm">1</span>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Reduce Operational Costs</h3>
-                      <p className="text-gray-600 text-sm sm:text-base">
-                        Optimize fuel consumption and maintenance schedules based on predictive analytics.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <span className="text-white font-bold text-sm">2</span>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Improve Efficiency</h3>
-                      <p className="text-gray-600 text-sm sm:text-base">
-                        Increase power output while minimizing resource waste through intelligent recommendations.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <span className="text-white font-bold text-sm">3</span>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Enhance Sustainability</h3>
-                      <p className="text-gray-600 text-sm sm:text-base">
-                        Balance energy production with environmental impact for long-term sustainability.
-                      </p>
-                    </div>
-                  </div>
+          {/* System Health */}
+          <div className="p-6 bg-slate-900/60 border border-white/10 rounded-xl backdrop-blur-xl flex flex-col justify-between">
+            <h3 className="text-lg font-semibold text-white mb-4">System Status</h3>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Factory className="h-5 w-5 text-emerald-400" />
+                  <span className="text-gray-300">Heat Source</span>
                 </div>
-
-                <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-gray-200">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Quick Stats</h3>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Prediction Accuracy</span>
-                      <span className="font-semibold text-green-600">95.2%</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Processing Speed</span>
-                      <span className="font-semibold text-blue-600">&lt; 2 seconds</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Energy Saved</span>
-                      <span className="font-semibold text-purple-600">12-18%</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Cost Reduction</span>
-                      <span className="font-semibold text-orange-600">15-25%</span>
-                    </div>
-                  </div>
+                <span className="text-emerald-400 font-semibold">Active</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Cpu className="h-5 w-5 text-blue-400" />
+                  <span className="text-gray-300">Conversion Unit</span>
                 </div>
+                <span className="text-blue-400 font-semibold">Healthy</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Bot className="h-5 w-5 text-yellow-400" />
+                  <span className="text-gray-300">AI Advisor</span>
+                </div>
+                <span className="text-yellow-400 font-semibold">Optimizing</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="h-5 w-5 text-red-400" />
+                  <span className="text-gray-300">Anomalies</span>
+                </div>
+                <span className="text-gray-400">None</span>
               </div>
             </div>
-          </section>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="text-center mt-6 mb-4 text-sm text-gray-500">
+          ⚡ Powered by HeatX AI • Real-time Efficiency • Sustainable Future
         </div>
       </div>
-
-      {/* Footer */}
-      <div className="text-center mt-8 sm:mt-12 py-6 sm:py-8 bg-gray-50">
-        <p className="text-gray-500 text-xs sm:text-sm">
-          Powered by AI • Real-time predictions • Sustainable energy planning
-        </p>
-      </div>
-
-      {/* Bottom Spacer */}
-      <div className="h-16 sm:h-20"></div>
     </div>
   );
 }
