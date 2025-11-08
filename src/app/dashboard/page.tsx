@@ -1,255 +1,252 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Line, Bar, Pie } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  ArcElement,
-  Tooltip,
-  Legend,
-} from "chart.js";
 import {
   Flame,
-  Zap,
+  BatteryCharging,
   Gauge,
   Leaf,
-  Cpu,
+  Brain,
   Factory,
-  AlertCircle,
-  Bot,
+  CircuitBoard,
+  BarChart3,
+  TrendingUp,
+  Power,
+  LineChart,
+  Thermometer,
+  Loader2,
+  Cpu,
 } from "lucide-react";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  ArcElement,
-  Tooltip,
-  Legend
-);
-
 export default function HeatXDashboard() {
-  const [heatData, setHeatData] = useState<number[]>([85, 90, 92, 88, 94, 97]);
-  const [efficiencyData, setEfficiencyData] = useState<number[]>([70, 73, 75, 78, 80]);
-  const [powerOutput, setPowerOutput] = useState<number[]>([12, 14, 15, 13, 16, 17]);
+  const [currentHeat, setCurrentHeat] = useState(94.2);
+  const [currentPower, setCurrentPower] = useState(16.4);
+  const [currentEfficiency, setCurrentEfficiency] = useState(82.7);
+  const [currentCO2, setCurrentCO2] = useState(12.3);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setHeatData((prev) => [...prev.slice(1), Math.random() * 20 + 80]);
-      setEfficiencyData((prev) => [...prev.slice(1), Math.random() * 10 + 70]);
-      setPowerOutput((prev) => [...prev.slice(1), Math.random() * 8 + 12]);
-    }, 5000);
+      setCurrentHeat((prev) => prev + (Math.random() - 0.5) * 2);
+      setCurrentPower((prev) => prev + (Math.random() - 0.5) * 0.5);
+      setCurrentEfficiency((prev) =>
+        Math.min(100, Math.max(70, prev + (Math.random() - 0.5)))
+      );
+      setCurrentCO2((prev) => prev + Math.random() * 0.2);
+    }, 3000);
     return () => clearInterval(interval);
   }, []);
 
-  const heatChart = {
-    labels: ["-25s", "-20s", "-15s", "-10s", "-5s", "Now"],
-    datasets: [
-      {
-        label: "Heat Captured (°C)",
-        data: heatData,
-        borderColor: "#10B981",
-        backgroundColor: "rgba(16, 185, 129, 0.3)",
-        fill: true,
-        tension: 0.4,
-        pointRadius: 2,
-      },
-    ],
-  };
-
-  const efficiencyChart = {
-    labels: ["Cycle 1", "Cycle 2", "Cycle 3", "Cycle 4", "Cycle 5"],
-    datasets: [
-      {
-        label: "Conversion Efficiency (%)",
-        data: efficiencyData,
-        backgroundColor: "#3B82F6",
-      },
-    ],
-  };
-
-  const powerPrediction = {
-    labels: ["T-5", "T-4", "T-3", "T-2", "T-1", "Now"],
-    datasets: [
-      {
-        label: "Power Output (kWh)",
-        data: powerOutput,
-        borderColor: "#F59E0B",
-        backgroundColor: "rgba(245, 158, 11, 0.3)",
-        fill: true,
-        tension: 0.4,
-        pointRadius: 2,
-      },
-    ],
-  };
-
-  const resourceChart = {
-    labels: ["Heat Recovery", "Storage", "Distribution", "Loss"],
-    datasets: [
-      {
-        label: "Energy Allocation",
-        data: [45, 30, 20, 5],
-        backgroundColor: [
-          "rgba(16,185,129,0.7)",
-          "rgba(59,130,246,0.7)",
-          "rgba(245,158,11,0.7)",
-          "rgba(239,68,68,0.7)",
-        ],
-        borderWidth: 0,
-      },
-    ],
-  };
-
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { labels: { color: "#CBD5E1" } },
-    },
-    scales: {
-      x: { ticks: { color: "#94A3B8" }, grid: { color: "#1E293B" } },
-      y: { ticks: { color: "#94A3B8" }, grid: { color: "#1E293B" } },
-    },
-  };
-
   return (
-    <div className="flex-1 overflow-y-auto h-screen bg-slate-950">
-      <div className="max-w-7xl mx-auto px-6 py-10">
-        {/* Header */}
-        <div className="mb-10 sticky top-0 bg-slate-950/80 backdrop-blur-md pb-3 z-20">
-          <h1 className="text-3xl font-bold text-white mb-1">HeatX AI Dashboard</h1>
-          <p className="text-gray-400 text-sm">Real-time heat energy capture and conversion analytics</p>
+    <div className="min-h-screen overflow-y-auto bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white scroll-smooth">
+      {/* Header */}
+      <header className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/50">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-emerald-500/30">
+              <Factory className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold tracking-tight text-white">
+                HeatX Dashboard
+              </h1>
+              <p className="text-xs text-slate-400">
+                Autonomous Energy & Carbon Intelligence
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+              <span className="text-xs font-medium text-emerald-400">Live</span>
+            </div>
+          </div>
         </div>
+      </header>
 
-        {/* KPI Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      {/* Scrollable Body */}
+      <main className="max-w-7xl mx-auto px-6 py-10 space-y-10">
+        {/* KPI Section */}
+        <section className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
             {
-              label: "Heat Captured",
-              value: "94.2°C",
-              icon: <Flame className="h-6 w-6 text-orange-400" />,
-              gradient: "from-orange-500/40 to-yellow-500/20",
+              label: "Thermal Energy",
+              value: currentHeat.toFixed(1),
+              unit: "°C",
+              change: "+2.3%",
+              icon: <Thermometer className="h-5 w-5" />,
+              color: "from-orange-500 to-red-500",
             },
             {
               label: "Power Output",
-              value: "16.4 kWh",
-              icon: <Zap className="h-6 w-6 text-emerald-400" />,
-              gradient: "from-emerald-500/40 to-cyan-500/20",
+              value: currentPower.toFixed(1),
+              unit: "kWh",
+              change: "+8.1%",
+              icon: <Power className="h-5 w-5" />,
+              color: "from-cyan-500 to-emerald-400",
             },
             {
-              label: "Efficiency",
-              value: "82.7%",
-              icon: <Gauge className="h-6 w-6 text-blue-400" />,
-              gradient: "from-blue-500/40 to-purple-500/20",
+              label: "Conversion Efficiency",
+              value: currentEfficiency.toFixed(1),
+              unit: "%",
+              change: "+1.9%",
+              icon: <Gauge className="h-5 w-5" />,
+              color: "from-blue-500 to-violet-500",
             },
             {
-              label: "CO₂ Reduced",
-              value: "12.3 kg",
-              icon: <Leaf className="h-6 w-6 text-green-400" />,
-              gradient: "from-green-500/40 to-emerald-500/20",
+              label: "CO₂ Reduction",
+              value: currentCO2.toFixed(1),
+              unit: "kg",
+              change: "+5.7%",
+              icon: <Leaf className="h-5 w-5" />,
+              color: "from-green-500 to-emerald-500",
             },
-          ].map((card, i) => (
+          ].map((metric, i) => (
             <div
               key={i}
-              className={`p-6 rounded-xl bg-gradient-to-br ${card.gradient} border border-white/10 backdrop-blur-lg shadow-md`}
+              className={`p-5 rounded-xl border border-slate-800 bg-slate-900/60 backdrop-blur-sm hover:scale-[1.02] transition-transform shadow-sm shadow-black/20`}
             >
-              <div className="flex items-center justify-between mb-2">
-                {card.icon}
-                <p className="text-sm text-gray-400">{card.label}</p>
+              <div className="flex justify-between items-start mb-4">
+                <div
+                  className={`p-2.5 rounded-lg bg-gradient-to-br ${metric.color} text-white`}
+                >
+                  {metric.icon}
+                </div>
+                <span className="flex items-center gap-1 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-md">
+                  <TrendingUp className="h-3 w-3" /> {metric.change}
+                </span>
               </div>
-              <p className="text-2xl font-bold text-white">{card.value}</p>
+              <p className="text-xs uppercase text-slate-400">{metric.label}</p>
+              <div className="flex items-baseline gap-1">
+                <p className="text-3xl font-bold text-white">{metric.value}</p>
+                <span className="text-sm text-slate-500">{metric.unit}</span>
+              </div>
             </div>
           ))}
-        </div>
+        </section>
 
         {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
-          <div className="p-6 bg-slate-900/60 border border-white/10 rounded-xl backdrop-blur-xl">
-            <h3 className="text-lg font-semibold text-white mb-4">Heat Capture Trend</h3>
-            <div className="h-60">
-              <Line data={heatChart} options={chartOptions} />
+        <section className="grid lg:grid-cols-2 gap-6">
+          {/* Heat Trend */}
+          <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2">
+                <LineChart className="h-4 w-4 text-emerald-400" />
+                <h3 className="font-semibold text-sm text-white">
+                  Heat Capture Trend
+                </h3>
+              </div>
+              <span className="text-xs text-slate-500">Realtime</span>
+            </div>
+            <div className="space-y-3">
+              {[70, 80, 90, 95, currentHeat].map((v, i) => (
+                <div key={i} className="flex items-center gap-3">
+                  <span className="w-12 text-xs text-slate-500 font-mono">
+                    {i === 4 ? "Now" : `T-${(4 - i) * 5}s`}
+                  </span>
+                  <div className="flex-1 h-6 bg-slate-800/50 rounded-lg overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 transition-all duration-700"
+                      style={{ width: `${v}%` }}
+                    ></div>
+                  </div>
+                  <span className="text-xs text-emerald-400 font-semibold">
+                    {v.toFixed(1)}°C
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
 
-          <div className="p-6 bg-slate-900/60 border border-white/10 rounded-xl backdrop-blur-xl">
-            <h3 className="text-lg font-semibold text-white mb-4">
-              Conversion Efficiency by Cycle
-            </h3>
-            <div className="h-60">
-              <Bar data={efficiencyChart} options={chartOptions} />
-            </div>
+          {/* Efficiency Histogram */}
+          <div className="grid grid-cols-5 gap-3">
+            {[70, 73, 75, 78, currentEfficiency].map((val, i) => (
+              <div key={i} className="flex flex-col items-center gap-2">
+                <div className="w-full h-32 bg-slate-800/30 rounded-lg relative overflow-hidden">
+                  <div
+                    className="absolute bottom-0 w-full bg-gradient-to-t from-blue-500 to-blue-400 transition-all duration-1000"
+                    style={{ height: `${val}%` }}
+                  ></div>
+                </div>
+                <span className="text-xs text-slate-400">C{i + 1}</span>
+                <span className="text-xs font-semibold text-white">
+                  {val.toFixed(0)}%
+                </span>
+              </div>
+            ))}
           </div>
-        </div>
+        </section>
 
-        {/* Additional Analytics */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-10">
-          <div className="p-6 bg-slate-900/60 border border-white/10 rounded-xl backdrop-blur-xl">
-            <h3 className="text-lg font-semibold text-white mb-4">Predicted Power Output</h3>
-            <div className="h-60">
-              <Line data={powerPrediction} options={chartOptions} />
+        {/* Bottom Analytics */}
+        <section className="grid lg:grid-cols-3 gap-6">
+          {/* AI Insights */}
+          <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6">
+            <div className="flex items-center gap-2 mb-5">
+              <Brain className="h-4 w-4 text-amber-400" />
+              <h3 className="font-semibold text-sm text-white">
+                AI Optimization Insights
+              </h3>
             </div>
-          </div>
-
-          <div className="p-6 bg-slate-900/60 border border-white/10 rounded-xl backdrop-blur-xl">
-            <h3 className="text-lg font-semibold text-white mb-4">Resource Allocation</h3>
-            <div className="h-60 flex items-center justify-center">
-              <Pie
-                data={resourceChart}
-                options={{
-                  plugins: { legend: { labels: { color: "#CBD5E1" } } },
-                }}
-              />
-            </div>
+            <ul className="space-y-3 text-xs text-slate-300">
+              <li>• Adaptive energy routing improved efficiency by 3.4%.</li>
+              <li>• Optimal heat recovery time: 21.3s average.</li>
+              <li>• Peak conversion zone maintained at 94°C.</li>
+              <li>• Predictive model recalibration every 10 min.</li>
+            </ul>
           </div>
 
           {/* System Health */}
-          <div className="p-6 bg-slate-900/60 border border-white/10 rounded-xl backdrop-blur-xl flex flex-col justify-between">
-            <h3 className="text-lg font-semibold text-white mb-4">System Status</h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Factory className="h-5 w-5 text-emerald-400" />
-                  <span className="text-gray-300">Heat Source</span>
+          <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6">
+            <div className="flex items-center gap-2 mb-5">
+              <Cpu className="h-4 w-4 text-cyan-400" />
+              <h3 className="font-semibold text-sm text-white">
+                System Health Status
+              </h3>
+            </div>
+            <div className="space-y-2 text-xs">
+              {[
+                { label: "Heat Source", status: "Active", color: "emerald" },
+                { label: "Conversion Unit", status: "Stable", color: "blue" },
+                { label: "AI Model", status: "Running", color: "amber" },
+                { label: "Anomalies", status: "None", color: "slate" },
+              ].map((s, i) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-between border border-slate-800/60 p-3 rounded-lg bg-slate-800/30"
+                >
+                  <span className="font-medium text-slate-300">{s.label}</span>
+                  <span
+                    className={`text-xs font-semibold text-${s.color}-400 bg-${s.color}-500/10 px-3 py-1 rounded-full`}
+                  >
+                    {s.status}
+                  </span>
                 </div>
-                <span className="text-emerald-400 font-semibold">Active</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Cpu className="h-5 w-5 text-blue-400" />
-                  <span className="text-gray-300">Conversion Unit</span>
-                </div>
-                <span className="text-blue-400 font-semibold">Healthy</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Bot className="h-5 w-5 text-yellow-400" />
-                  <span className="text-gray-300">AI Advisor</span>
-                </div>
-                <span className="text-yellow-400 font-semibold">Optimizing</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <AlertCircle className="h-5 w-5 text-red-400" />
-                  <span className="text-gray-300">Anomalies</span>
-                </div>
-                <span className="text-gray-400">None</span>
-              </div>
+              ))}
             </div>
           </div>
-        </div>
+
+          {/* Blockchain Summary */}
+          <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6">
+            <div className="flex items-center gap-2 mb-5">
+              <CircuitBoard className="h-4 w-4 text-violet-400" />
+              <h3 className="font-semibold text-sm text-white">
+                Blockchain Ledger Summary
+              </h3>
+            </div>
+            <ul className="text-xs text-slate-300 space-y-2">
+              <li>• 3 Blocks mined today</li>
+              <li>• 1 Mint, 1 Transfer, 1 Retire transaction</li>
+              <li>• Verification: ✅ Ledger Integrity Passed</li>
+              <li>• Active Nodes: 4 regional hubs</li>
+            </ul>
+          </div>
+        </section>
 
         {/* Footer */}
-        <div className="text-center mt-6 mb-4 text-sm text-gray-500">
-          ⚡ Powered by HeatX AI • Real-time Efficiency • Sustainable Future
-        </div>
-      </div>
+        <footer className="pt-8 border-t border-slate-800/60 text-xs text-slate-500 text-center">
+          ⚡ Powered by HeatX AI • Decentralized Energy Optimization •
+          Sustainable Future
+        </footer>
+      </main>
     </div>
   );
 }
